@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.banco.domain.conta.exception.ContaInativaException;
 import com.banco.domain.conta.exception.ContaNaoEncontradaException;
 import com.banco.domain.conta.exception.SaldoInsulficienteException;
 import com.banco.domain.conta.exception.ValorInvalidoException;
@@ -100,12 +101,24 @@ public class ContaService {
     }
 
     private void validarDeposito(Conta conta, BigDecimal valor) {
+        if (!conta.isAtivo()) {
+            throw new ContaInativaException(conta.getNumero());
+        }
+
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValorInvalidoException(valor);
         }
     }
 
     private void validarTransferencia(Conta remetente, Conta destintario, BigDecimal valor) {
+        if (!remetente.isAtivo()) {
+            throw new ContaInativaException(remetente.getNumero());
+        }
+
+        if (!destintario.isAtivo()) {
+            throw new ContaInativaException(destintario.getNumero());
+        }
+
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValorInvalidoException(valor);
         }

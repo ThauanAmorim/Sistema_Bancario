@@ -36,6 +36,9 @@ public class BancoApplication {
 		contaService.cadastrar(contaJoao);
 		contaService.cadastrar(contaMaria);
 
+		contaService.alterarAtivo(1);
+		contaService.alterarAtivo(2);
+
 		contaService.transferir(1, 2, BigDecimal.valueOf(1000));
 
 		System.out.println(contaService.buscar(1));
