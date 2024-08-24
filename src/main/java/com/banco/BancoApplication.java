@@ -1,6 +1,8 @@
 package com.banco;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +15,13 @@ import com.banco.domain.conta.model.Conta;
 @SpringBootApplication
 public class BancoApplication {
 
+	private Scanner scan;
+
 	private ContaService contaService;
 
 	public BancoApplication(ContaService contaService) {
 		this.contaService = contaService;
+		this.scan = new Scanner(System.in);
 	}
 
 	public static void main(String[] args) {
@@ -25,23 +30,213 @@ public class BancoApplication {
 
 		bancoApplication.run();
 	}
-	
+
 	public void run() {
-		Cliente joao = new Cliente("João");
-		Cliente maria = new Cliente("Maria");
+		try {
+			menuPrincial();
+		} catch (Exception exception) {
+			System.out.println(exception.getMessage());
+		}
+	}
 
-		Conta contaJoao = new Conta(joao, BigDecimal.valueOf(1000));
-		Conta contaMaria = new Conta(maria, BigDecimal.valueOf(1000));
+	private void menuPrincial() {
+		String opcao = "";
+		do {
+			clear();
 
-		contaService.cadastrar(contaJoao);
-		contaService.cadastrar(contaMaria);
+			System.out.println("Menu Principal");
+			System.out.println("1 - Cadastrar");
+			System.out.println("2 - Depositar");
+			System.out.println("3 - Sacar");
+			System.out.println("4 - Transferir");
+			System.out.println("5 - Alterar Ativo");
+			System.out.println("6 - Buscar");
+			System.out.println("q - Sair");
 
-		contaService.alterarAtivo(1);
-		contaService.alterarAtivo(2);
+			System.out.print("Escolha uma opção: ");
+			opcao = scan.nextLine();
 
-		contaService.transferir(1, 2, BigDecimal.valueOf(1000));
+			try {
+				switch (opcao) {
+					case "1":
+						menuCadastrar();
+						break;
+					case "2":
+						menuDepositar();
+						break;
+					case "3":
+						menuSaque();
+						break;
+					case "4":
+						menuTransferir();
+						break;
+					case "5":
+						menuAlterarAtivo();
+						break;
+					case "6":
+						menuBuscar();
+						break;
+					case "q":
+						clear();
+						System.out.println("Saindo...");
+						sair();
+						break;
+					default:
+						System.out.println("Opção inválida");
+						aguardarEnter();
+						break;
+				}
+			} catch (Exception exception) {
+				if (exception.getMessage() != null) {
+					System.out.println(exception.getMessage());
+				} else {
+					System.out.println(exception);
+				}
+				aguardarEnter();
+			}
+		} while (!opcao.equals("q"));
+	}
 
-		System.out.println(contaService.buscar(1));
+	private void menuCadastrar() {
+		clear();
+
+		System.out.println("Menu Cadastrar");
+
+		System.out.print("Nome: ");
+		String nome = scan.nextLine();
+
+		System.out.print("Valor inicial: ");
+		BigDecimal valor = BigDecimal.valueOf(scan.nextDouble());
+
+		Cliente cliente = new Cliente();
+		cliente.setNome(nome);
+
+		Conta conta = new Conta(cliente, valor);
+
+		conta = contaService.cadastrar(conta);
+
+		clear();
+		System.out.println("Conta Cadastrada");
+		System.out.println(String.format("Número: %d, Nome: %s, Saldo: R$ %.2f", conta.getNumero(),
+				conta.getCliente().getNome(), conta.getSaldo()));
+
+		aguardarEnter();
+	}
+
+	private void menuDepositar() {
+		clear();
+
+		System.out.println("Depositar");
+
+		System.out.print("Número da conta: ");
+		int numero = scan.nextInt();
+
+		System.out.print("Valor: ");
+		BigDecimal valor = BigDecimal.valueOf(scan.nextDouble());
+
+		Conta conta = contaService.depositar(numero, valor);
+
+		clear();
+		System.out.println("Deposito realizado");
+		System.out.println(String.format("Saldo: R$ %.2f", conta.getSaldo()));
+
+		aguardarEnter();
+	}
+
+	private void menuSaque() {
+		clear();
+
+		System.out.println("Sacar");
+
+		System.out.print("Número da conta: ");
+		int numero = scan.nextInt();
+
+		System.out.print("Valor: ");
+		BigDecimal valor = BigDecimal.valueOf(scan.nextDouble());
+
+		Conta conta = contaService.depositar(numero, valor);
+
+		clear();
+		System.out.println("Saque realizado");
+		System.out.println(String.format("Saldo: R$ %.2f", conta.getSaldo()));
+
+		aguardarEnter();
+	}
+
+	private void menuTransferir() {
+		clear();
+
+		System.out.println("Transferir");
+
+		System.out.print("Número da conta remetente: ");
+		int numeroRemetente = scan.nextInt();
+
+		System.out.print("Conta da conta do destinatário: ");
+		int numeroDestinatario = scan.nextInt();
+
+		System.out.print("Valor: ");
+		BigDecimal valor = BigDecimal.valueOf(scan.nextDouble());
+
+		Conta contaRemetente = contaService.transferir(numeroRemetente, numeroDestinatario, valor);
+
+		clear();
+		System.out.println("Transferencia realizada");
+		System.out.println(String.format("Saldo: R$ %.2f", contaRemetente.getSaldo()));
+
+		aguardarEnter();
+	}
+
+	private void menuAlterarAtivo() {
+		clear();
+
+		System.out.println("Alterar ativo");
+
+		System.out.print("Número da conta: ");
+		int numero = scan.nextInt();
+
+		Conta conta = contaService.alterarAtivo(numero);
+
+		clear();
+		System.out.println("Alteração realizada");
+		System.out.println(String.format("Ativo: %d", conta.isAtivo()));
+
+		aguardarEnter();
+	}
+
+	private void menuBuscar() {
+		clear();
+
+		System.out.println("Buscar");
+
+		System.out.print("Número da conta: ");
+		int numero = scan.nextInt();
+
+		Conta conta = contaService.buscar(numero);
+		System.out.println(conta);
+
+		aguardarEnter();
+	}
+
+	private void clear() {
+		try {
+			if (System.getProperty("os.name").contains("Windows")) {
+				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			} else {
+				new ProcessBuilder("clear").inheritIO().start().waitFor();
+			}
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void aguardarEnter() {
+		System.out.print("Pressione ENTER para continuar");
+		scan = new Scanner(System.in);
+		scan.nextLine();
+	}
+
+	private void sair() {
+		System.exit(0);
 	}
 
 }

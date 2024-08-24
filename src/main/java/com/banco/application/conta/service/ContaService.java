@@ -51,16 +51,18 @@ public class ContaService {
         return conta;
     }
 
-    public void transferir(int numeroContaRemetente, int numeroContaDestionatario, BigDecimal valor) {
+    public Conta transferir(int numeroContaRemetente, int numeroContaDestionatario, BigDecimal valor) {
         Conta remetente = buscar(numeroContaRemetente);
         Conta destinatario = buscar(numeroContaDestionatario);
 
         validarTransferencia(remetente, destinatario, valor);
 
-        Historico.transaferencia(remetente, destinatario, valor);
+        Historico.transferencia(remetente, destinatario, valor);
 
         remetente.sacar(valor);
         destinatario.depositar(valor);
+
+        return remetente;
     }
 
     public Conta alterarAtivo(int numeroConta) {
