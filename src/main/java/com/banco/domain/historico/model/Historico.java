@@ -60,7 +60,7 @@ public class Historico {
         return historico;
     }
 
-    public static Historico transaferencia(Conta remetente, Conta destinatario, BigDecimal valor) {
+    public static Historico transferencia(Conta remetente, Conta destinatario, BigDecimal valor) {
         Historico historico = new Historico(remetente, destinatario, TipoOperacao.TRANSFERENCIA,
                 String.format(MENSAGEM_TRANSAFERENCIA, valor, remetente.getNumero(), destinatario.getNumero()));
         remetente.addHistorico(historico);
