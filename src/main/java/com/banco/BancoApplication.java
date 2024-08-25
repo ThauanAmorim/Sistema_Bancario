@@ -115,7 +115,6 @@ public class BancoApplication {
 
 		conta = contaService.cadastrar(conta);
 
-		clear();
 		System.out.println("Conta Cadastrada");
 		System.out.println(String.format("Número: %d, Nome: %s, Saldo: R$ %.2f", conta.getNumero(),
 				conta.getCliente().getNome(), conta.getSaldo()));
@@ -136,7 +135,6 @@ public class BancoApplication {
 
 		Conta conta = contaService.depositar(numero, valor);
 
-		clear();
 		System.out.println("Deposito realizado");
 		System.out.println(String.format("Saldo: R$ %.2f", conta.getSaldo()));
 
@@ -156,7 +154,6 @@ public class BancoApplication {
 
 		Conta conta = contaService.depositar(numero, valor);
 
-		clear();
 		System.out.println("Saque realizado");
 		System.out.println(String.format("Saldo: R$ %.2f", conta.getSaldo()));
 
@@ -179,7 +176,6 @@ public class BancoApplication {
 
 		Conta contaRemetente = contaService.transferir(numeroRemetente, numeroDestinatario, valor);
 
-		clear();
 		System.out.println("Transferencia realizada");
 		System.out.println(String.format("Saldo: R$ %.2f", contaRemetente.getSaldo()));
 
@@ -196,7 +192,6 @@ public class BancoApplication {
 
 		Conta conta = contaService.alterarAtivo(numero);
 
-		clear();
 		System.out.println("Alteração realizada");
 		System.out.println(String.format("Ativo: %d", conta.isAtivo()));
 

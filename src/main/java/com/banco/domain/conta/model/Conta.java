@@ -29,6 +29,7 @@ public class Conta {
     public Conta(Cliente cliente, BigDecimal saldo) {
         this.cliente = cliente;
         this.saldo = saldo;
+        this.historicos = new LinkedList<>();
         this.ativo = true;
     }
 
