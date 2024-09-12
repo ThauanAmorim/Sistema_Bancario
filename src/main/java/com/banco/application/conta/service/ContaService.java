@@ -93,6 +93,10 @@ public class ContaService {
     }
 
     private void validarSaque(Conta conta, BigDecimal valor) {
+        if (!conta.isAtivo()) {
+            throw new ContaInativaException(conta.getNumero());
+        }
+        
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValorInvalidoException(valor);
         }
