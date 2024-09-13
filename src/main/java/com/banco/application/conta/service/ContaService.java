@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.banco.domain.conta.exception.ContaInativaException;
@@ -12,9 +14,12 @@ import com.banco.domain.conta.exception.SaldoInsulficienteException;
 import com.banco.domain.conta.exception.ValorInvalidoException;
 import com.banco.domain.conta.model.Conta;
 import com.banco.domain.historico.model.Historico;
+import com.banco.infrastructure.utils.LogBuilder;
 
 @Service
 public class ContaService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContaService.class);
 
     private List<Conta> contas;
 
@@ -23,11 +28,22 @@ public class ContaService {
     }
 
     public Conta cadastrar(Conta conta) {
+        LOGGER.info(LogBuilder.of()
+                .header("Iniciando cadastro da conta")
+                .row("Conta", conta)
+                .build());
+
         conta.setNumero(contas.size() + 1);
 
         Historico.cadastro(conta);
 
         contas.add(conta);
+
+        LOGGER.info(LogBuilder.of()
+                .header("Iniciando cadastro da conta")
+                .row("Conta", conta)
+                .build());
+
         return conta;
     }
 

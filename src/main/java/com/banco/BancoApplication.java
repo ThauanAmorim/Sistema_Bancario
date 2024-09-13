@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -11,9 +13,12 @@ import org.springframework.context.ApplicationContext;
 import com.banco.application.conta.service.ContaService;
 import com.banco.domain.cliente.model.Cliente;
 import com.banco.domain.conta.model.Conta;
+import com.banco.infrastructure.utils.LogBuilder;
 
 @SpringBootApplication
 public class BancoApplication {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BancoApplication.class);
 
 	private Scanner scan;
 
@@ -35,7 +40,10 @@ public class BancoApplication {
 		try {
 			menuPrincial();
 		} catch (Exception exception) {
-			System.out.println(exception.getMessage());
+			LOGGER.error(LogBuilder.of()
+					.header("Um erro aconteceu")
+					.row("erro", exception.getMessage())
+					.build());
 		}
 	}
 
@@ -87,11 +95,10 @@ public class BancoApplication {
 						break;
 				}
 			} catch (Exception exception) {
-				if (exception.getMessage() != null) {
-					System.out.println(exception.getMessage());
-				} else {
-					System.out.println(exception);
-				}
+				LOGGER.error(LogBuilder.of()
+						.header("Um erro aconteceu")
+						.row("erro", exception.getMessage())
+						.build(), exception);
 				aguardarEnter();
 			}
 		} while (!opcao.equals("q"));
