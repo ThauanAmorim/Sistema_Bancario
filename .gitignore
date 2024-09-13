@@ -3,6 +3,7 @@
 
 target/
 conteiners/data/
+/data/
 
 # Log file
 *.log
