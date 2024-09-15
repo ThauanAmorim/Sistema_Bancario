@@ -4,7 +4,7 @@ public class ContaInativaException extends RuntimeException {
 
     private static final String MENSAGEM_PADRAO = "Conta de número %d não está ativa para receber operações";
 
-    public ContaInativaException(int numeroConta) {
+    public ContaInativaException(long numeroConta) {
         super(String.format(MENSAGEM_PADRAO, numeroConta));
     }
 

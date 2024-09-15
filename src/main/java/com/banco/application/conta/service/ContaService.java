@@ -1,12 +1,13 @@
 package com.banco.application.conta.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.banco.domain.conta.exception.ContaInativaException;
 import com.banco.domain.conta.exception.ContaNaoEncontradaException;
@@ -14,6 +15,7 @@ import com.banco.domain.conta.exception.SaldoInsulficienteException;
 import com.banco.domain.conta.exception.ValorInvalidoException;
 import com.banco.domain.conta.model.Conta;
 import com.banco.domain.historico.model.Historico;
+import com.banco.infrastructure.repository.Conta.ContaRepository;
 import com.banco.infrastructure.utils.LogBuilder;
 
 @Service
@@ -21,32 +23,32 @@ public class ContaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContaService.class);
 
-    private List<Conta> contas;
+    private final ContaRepository contaRepository;
 
-    public ContaService() {
-        this.contas = new ArrayList<>();
+    public ContaService(ContaRepository contaRepository) {
+        this.contaRepository = contaRepository;
     }
 
+    @Transactional
     public Conta cadastrar(Conta conta) {
         LOGGER.info(LogBuilder.of()
                 .header("Iniciando cadastro da conta")
                 .row("Conta", conta)
                 .build());
 
-        conta.setNumero(contas.size() + 1);
-
         Historico.cadastro(conta);
 
-        contas.add(conta);
+        conta = contaRepository.save(conta);
 
         LOGGER.info(LogBuilder.of()
-                .header("Iniciando cadastro da conta")
+                .header("Finalizando cadastro da conta")
                 .row("Conta", conta)
                 .build());
 
         return conta;
     }
 
+    @Transactional
     public Conta depositar(int numeroConta, BigDecimal valor) {
         Conta conta = buscar(numeroConta);
         validarDeposito(conta, valor);
@@ -54,9 +56,10 @@ public class ContaService {
         Historico.deposito(conta, valor);
 
         conta.depositar(valor);
-        return conta;
+        return contaRepository.save(conta);
     }
 
+    @Transactional
     public Conta sacar(int numeroConta, BigDecimal valor) {
         Conta conta = buscar(numeroConta);
         validarSaque(conta, valor);
@@ -64,9 +67,10 @@ public class ContaService {
         Historico.saque(conta, valor);
 
         conta.sacar(valor);
-        return conta;
+        return contaRepository.save(conta);
     }
 
+    @Transactional
     public Conta transferir(int numeroContaRemetente, int numeroContaDestionatario, BigDecimal valor) {
         Conta remetente = buscar(numeroContaRemetente);
         Conta destinatario = buscar(numeroContaDestionatario);
@@ -76,11 +80,15 @@ public class ContaService {
         Historico.transferencia(remetente, destinatario, valor);
 
         remetente.sacar(valor);
+        remetente = contaRepository.save(remetente);
+
         destinatario.depositar(valor);
+        contaRepository.save(destinatario);
 
         return remetente;
     }
 
+    @Transactional
     public Conta alterarAtivo(int numeroConta) {
         Conta conta = buscar(numeroConta);
 
@@ -92,25 +100,27 @@ public class ContaService {
 
         Historico.alterarAtivo(conta);
 
-        return conta;
+        return contaRepository.save(conta);
     }
 
+    @Transactional(readOnly = true)
     public List<Conta> buscarTodos() {
-        return this.contas;
+        return contaRepository.findAll();
     }
 
-    public Conta buscar(int numeroConta) {
-        for (Conta conta : contas) {
-            if (conta.getNumero() == numeroConta) {
-                return conta;
-            }
+    @Transactional(readOnly = true)
+    public Conta buscar(long idConta) {
+        Optional<Conta> contaOp = contaRepository.buscarPorId(idConta);
+        if (contaOp.isEmpty()) {
+            throw new ContaNaoEncontradaException(idConta);
         }
-        throw new ContaNaoEncontradaException(numeroConta);
+
+        return contaOp.get();
     }
 
     private void validarSaque(Conta conta, BigDecimal valor) {
         if (!conta.isAtivo()) {
-            throw new ContaInativaException(conta.getNumero());
+            throw new ContaInativaException(conta.getId());
         }
         
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
@@ -124,7 +134,7 @@ public class ContaService {
 
     private void validarDeposito(Conta conta, BigDecimal valor) {
         if (!conta.isAtivo()) {
-            throw new ContaInativaException(conta.getNumero());
+            throw new ContaInativaException(conta.getId());
         }
 
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
@@ -134,11 +144,11 @@ public class ContaService {
 
     private void validarTransferencia(Conta remetente, Conta destintario, BigDecimal valor) {
         if (!remetente.isAtivo()) {
-            throw new ContaInativaException(remetente.getNumero());
+            throw new ContaInativaException(remetente.getId());
         }
 
         if (!destintario.isAtivo()) {
-            throw new ContaInativaException(destintario.getNumero());
+            throw new ContaInativaException(destintario.getId());
         }
 
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {

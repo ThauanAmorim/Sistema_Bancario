@@ -1,0 +1,8 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5441/sistema-bancario-db
+        username: dev
+        password: dev
+    jpa:
+        hibernate:
+            ddl_auto: update

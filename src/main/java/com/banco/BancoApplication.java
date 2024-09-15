@@ -123,7 +123,7 @@ public class BancoApplication {
 		conta = contaService.cadastrar(conta);
 
 		System.out.println("Conta Cadastrada");
-		System.out.println(String.format("Número: %d, Nome: %s, Saldo: R$ %.2f", conta.getNumero(),
+		System.out.println(String.format("Número: %d, Nome: %s, Saldo: R$ %.2f", conta.getId(),
 				conta.getCliente().getNome(), conta.getSaldo()));
 
 		aguardarEnter();

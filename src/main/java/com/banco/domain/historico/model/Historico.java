@@ -5,11 +5,22 @@ import java.time.LocalDateTime;
 
 import com.banco.domain.conta.model.Conta;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "t_historico")
 public class Historico {
 
     private static final String MENSAGEM_CADASTRO = "Cadastrou a conta com R$ %s";
@@ -18,10 +29,19 @@ public class Historico {
     private static final String MENSAGEM_TRANSAFERENCIA = "Transferiu R$ %s de %d para %d";
     private static final String MENSAGEM_ALTERACAO_ATIVO = "Alterou o ativo para %s";
 
-    private Conta remetente;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
+    @ManyToOne
+    @JoinColumn(name = "id_remetente")
+    private Conta remetente;
+    
+    @ManyToOne
+    @JoinColumn(name = "id_destinatario")
     private Conta destinatario;
 
+    @Enumerated(EnumType.STRING)
     private TipoOperacao tipoOperacao;
 
     private String descricao;
@@ -62,7 +82,7 @@ public class Historico {
 
     public static Historico transferencia(Conta remetente, Conta destinatario, BigDecimal valor) {
         Historico historico = new Historico(remetente, destinatario, TipoOperacao.TRANSFERENCIA,
-                String.format(MENSAGEM_TRANSAFERENCIA, valor, remetente.getNumero(), destinatario.getNumero()));
+                String.format(MENSAGEM_TRANSAFERENCIA, valor, remetente.getId(), destinatario.getId()));
         remetente.addHistorico(historico);
         destinatario.addHistorico(historico);
         return historico;

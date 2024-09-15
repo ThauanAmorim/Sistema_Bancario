@@ -3,10 +3,20 @@ package com.banco.domain.conta.model;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.banco.domain.cliente.model.Cliente;
 import com.banco.domain.historico.model.Historico;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,15 +26,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "t_conta")
 public class Conta {
-    
-    private int numero;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Cliente cliente;
 
     private BigDecimal saldo;
 
-    private LinkedList<Historico> historicos;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Historico> historicos;
 
     private boolean ativo;
 
@@ -61,7 +77,7 @@ public class Conta {
 
     @Override
     public String toString() {
-        return "{\"numero\":\"" + numero + "\", \"cliente\":\"" + cliente + "\", \"saldo\":\"" + saldo
+        return "{\"cliente\":\"" + cliente + "\", \"saldo\":\"" + saldo
                 + "\", \"historicos\":\"" + Arrays.toString(historicos.toArray()) + "\", \"ativo\":\"" + ativo + "\"}";
     }
 
