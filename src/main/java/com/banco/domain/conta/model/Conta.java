@@ -1,6 +1,7 @@
 package com.banco.domain.conta.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,14 +41,14 @@ public class Conta {
     private BigDecimal saldo;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Historico> historicos;
+    private List<Historico> historicos = new ArrayList<>();
 
     private boolean ativo;
 
     public Conta(Cliente cliente, BigDecimal saldo) {
         this.cliente = cliente;
         this.saldo = saldo;
-        this.historicos = new LinkedList<>();
+        this.historicos = new ArrayList<>();
         this.ativo = true;
     }
 

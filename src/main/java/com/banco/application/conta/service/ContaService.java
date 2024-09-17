@@ -36,6 +36,8 @@ public class ContaService {
                 .row("Conta", conta)
                 .build());
 
+        conta.ativar();
+        
         Historico.cadastro(conta);
 
         conta = contaRepository.save(conta);
