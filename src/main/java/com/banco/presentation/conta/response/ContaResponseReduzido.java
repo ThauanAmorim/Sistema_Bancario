@@ -1,10 +1,8 @@
 package com.banco.presentation.conta.response;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.banco.presentation.cliente.response.ClienteResponse;
-import com.banco.presentation.historico.response.HistoricoResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,15 +13,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ContaResponse {
+public class ContaResponseReduzido {
 
     private Long id;
 
     private ClienteResponse cliente;
     
     private BigDecimal saldo;
-
-    private List<HistoricoResponse> historicos;
 
     private boolean ativo;
 

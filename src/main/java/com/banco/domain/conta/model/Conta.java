@@ -3,7 +3,6 @@ package com.banco.domain.conta.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.banco.domain.cliente.model.Cliente;
@@ -17,7 +16,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +42,8 @@ public class Conta {
 
     private BigDecimal saldo;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @OrderBy(value = "dataCadastro DESC")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Historico> historicos = new ArrayList<>();
 
@@ -70,7 +74,7 @@ public class Conta {
 
     public void addHistorico(Historico historico) {
         if (historicos == null) {
-            this.historicos = new LinkedList<>();
+            this.historicos = new ArrayList<>();
         }
 
         this.historicos.add(historico);

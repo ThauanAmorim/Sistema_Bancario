@@ -51,7 +51,7 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta depositar(int numeroConta, BigDecimal valor) {
+    public Conta depositar(long numeroConta, BigDecimal valor) {
         Conta conta = buscar(numeroConta);
         validarDeposito(conta, valor);
 
@@ -62,7 +62,7 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta sacar(int numeroConta, BigDecimal valor) {
+    public Conta sacar(long numeroConta, BigDecimal valor) {
         Conta conta = buscar(numeroConta);
         validarSaque(conta, valor);
 
@@ -73,7 +73,7 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta transferir(int numeroContaRemetente, int numeroContaDestionatario, BigDecimal valor) {
+    public Conta transferir(long numeroContaRemetente, long numeroContaDestionatario, BigDecimal valor) {
         Conta remetente = buscar(numeroContaRemetente);
         Conta destinatario = buscar(numeroContaDestionatario);
 
@@ -91,7 +91,7 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta alterarAtivo(int numeroConta) {
+    public Conta alterarAtivo(long numeroConta) {
         Conta conta = buscar(numeroConta);
 
         if (conta.isAtivo()) {
