@@ -19,7 +19,8 @@ public class ContaSchedule {
         this.contaService = contaService;
     }
     
-    @Scheduled(cron = "0 0 2 1 * * *")
+    // @Scheduled(cron = "0 0 2 1 * *")
+    @Scheduled(cron = "0/5 * * * * *")
     public void redaFixa() {
         LOGGER.info(LogBuilder.of()
                 .header("INICIANDO RENDA FIXA")

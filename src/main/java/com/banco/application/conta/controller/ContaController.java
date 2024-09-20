@@ -1,9 +1,13 @@
 package com.banco.application.conta.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -126,24 +130,30 @@ public class ContaController {
     }
 
     @GetMapping("buscar")
-    public ResponseEntity<?> buscarTodos() {
-        List<Conta> contas = null;
+    public ResponseEntity<Page<?>> buscarTodos(Pageable pageable) {
+        Page<Conta> contas = null;
+
+        Page<?> response;
 
         try {
-            contas = contaService.buscarTodos();
+            contas = contaService.buscarTodos(pageable);
         } catch (ContaNaoEncontradaException contaNaoEncontradaException) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(contaNaoEncontradaException.getMessage());
+            response = new PageImpl<>(Arrays.asList(contaNaoEncontradaException.getMessage()), pageable, 1);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+            response = new PageImpl<>(Arrays.asList(exception.getMessage()), pageable, 1);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        List<ContaResponseReduzido> responses = new ArrayList<>(contas.size());
+        List<ContaResponseReduzido> contaResponseReduzidos = new ArrayList<>(contas.getSize());
 
         for (Conta conta : contas) {
-            responses.add(modelMapper.map(conta, ContaResponseReduzido.class));
+            contaResponseReduzidos.add(modelMapper.map(conta, ContaResponseReduzido.class));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(responses);
+        response = new PageImpl<>(contaResponseReduzidos, pageable, contaResponseReduzidos.size());
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

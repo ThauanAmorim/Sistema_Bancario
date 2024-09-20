@@ -3,6 +3,8 @@ package com.banco.infrastructure.repository.Conta;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,5 +20,11 @@ public interface ContaRepository extends JpaRepository<Conta, Long> {
 
     @Query("SELECT conta FROM Conta conta WHERE ativo = true")
     public List<Conta> buscarTodosAtivos();
+
+    @Query("SELECT conta FROM Conta conta WHERE ativo = true")
+    public Page<Conta> buscarTodosAtivos(Pageable pageable);
+
+    @Query("SELECT conta FROM Conta conta")
+    public Page<Conta> buscarTodos(Pageable pageable);
 
 }
