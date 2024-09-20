@@ -64,6 +64,13 @@ public class Conta {
         this.saldo = saldo.add(valor);
     }
 
+    public void adicionarValorPorPorcentagem(int porcentagem) {
+        BigDecimal valorAdicional = getSaldo().multiply(BigDecimal.valueOf(porcentagem / 100f));
+        setSaldo(getSaldo().add(valorAdicional));
+
+        Historico.rendaFixa(this, valorAdicional);
+    }
+
     public void ativar() {
         this.ativo = true;
     }

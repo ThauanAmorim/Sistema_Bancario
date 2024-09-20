@@ -23,6 +23,8 @@ public class ContaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContaService.class);
 
+    private static final int TAXA_JUROS_ANUAL = 24;
+
     private final ContaRepository contaRepository;
 
     public ContaService(ContaRepository contaRepository) {
@@ -103,6 +105,22 @@ public class ContaService {
         Historico.alterarAtivo(conta);
 
         return contaRepository.save(conta);
+    }
+
+    @Transactional
+    public void rendaFixa() {
+        List<Conta> contas = buscarTodosAtivos();
+
+        for (Conta conta : contas) {
+            conta.adicionarValorPorPorcentagem(TAXA_JUROS_ANUAL / 12);
+        }
+
+        contaRepository.saveAll(contas);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Conta> buscarTodosAtivos() {
+        return contaRepository.buscarTodosAtivos();
     }
 
     @Transactional(readOnly = true)

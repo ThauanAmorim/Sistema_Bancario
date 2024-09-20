@@ -1,5 +1,6 @@
 package com.banco.infrastructure.repository.Conta;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,8 @@ public interface ContaRepository extends JpaRepository<Conta, Long> {
     
     @Query("SELECT conta FROM Conta conta WHERE id = :idConta")
     public Optional<Conta> buscarPorId(@Param("idConta") long idConta);
+
+    @Query("SELECT conta FROM Conta conta WHERE ativo = true")
+    public List<Conta> buscarTodosAtivos();
 
 }

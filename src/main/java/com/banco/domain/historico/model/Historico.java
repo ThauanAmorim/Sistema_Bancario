@@ -1,6 +1,7 @@
 package com.banco.domain.historico.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
 import com.banco.domain.conta.model.Conta;
@@ -26,6 +27,7 @@ public class Historico {
     private static final String MENSAGEM_CADASTRO = "Cadastrou a conta com R$ %s";
     private static final String MENSAGEM_SAQUE = "Sacou R$ %s";
     private static final String MENSAGEM_DEPOSITO = "Depositou R$ %s";
+    private static final String MENSAGEM_RENDA_FIXA = "Recebeu R$ %s de juros";
     private static final String MENSAGEM_TRANSAFERENCIA = "Transferiu R$ %s de %d para %d";
     private static final String MENSAGEM_ALTERACAO_ATIVO = "Alterou o ativo para %s";
 
@@ -88,6 +90,13 @@ public class Historico {
         return historico;
     }
 
+    public static Historico rendaFixa(Conta remetente, BigDecimal valor) {
+        Historico historico = new Historico(remetente, null, TipoOperacao.RENDA_FIXA,
+                String.format(MENSAGEM_RENDA_FIXA, valor.setScale(2, RoundingMode.HALF_UP)));
+        remetente.addHistorico(historico);
+        return historico;
+    }
+
     public static Historico alterarAtivo(Conta remetente) {
         Historico historico = new Historico(remetente, null, TipoOperacao.ALTERAR_ATIVO,
                 String.format(MENSAGEM_ALTERACAO_ATIVO, remetente.isAtivo()));
@@ -106,6 +115,7 @@ public class Historico {
         SAQUE("Saque"),
         DEPOSITO("Deposito"),
         TRANSFERENCIA("Transferencia"),
+        RENDA_FIXA("Renda fixa"),
         ALTERAR_ATIVO("Alterar ativo");
 
         private String label;
