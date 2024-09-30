@@ -21,6 +21,7 @@ import com.banco.domain.conta.model.Conta;
 import com.banco.domain.historico.model.Historico;
 import com.banco.infrastructure.repository.Conta.ContaRepository;
 import com.banco.infrastructure.utils.LogBuilder;
+import com.banco.infrastructure.utils.SharUtils;
 
 @Service
 public class ContaService {
@@ -46,6 +47,10 @@ public class ContaService {
         
         Historico.cadastro(conta);
 
+        String senha = conta.getCliente().getSenha();
+        senha = SharUtils.shar(senha);
+        conta.getCliente().setSenha(senha);
+
         conta = contaRepository.save(conta);
 
         LOGGER.info(LogBuilder.of()
@@ -57,8 +62,8 @@ public class ContaService {
     }
 
     @Transactional
-    public Conta depositar(long numeroConta, BigDecimal valor) {
-        Conta conta = buscar(numeroConta);
+    public Conta depositar(String nome, BigDecimal valor) {
+        Conta conta = buscar(nome);
         validarDeposito(conta, valor);
 
         Historico.deposito(conta, valor);
@@ -156,10 +161,22 @@ public class ContaService {
     }
 
     @Transactional(readOnly = true)
-    public Conta buscar(long idConta) {
-        Optional<Conta> contaOp = contaRepository.buscarPorId(idConta);
+    public Conta buscar(long id) {
+        Optional<Conta> contaOp = contaRepository.buscarPorId(id);
+        
         if (contaOp.isEmpty()) {
-            throw new ContaNaoEncontradaException(idConta);
+            throw new ContaNaoEncontradaException(id);
+        }
+
+        return contaOp.get();
+    }
+
+    @Transactional(readOnly = true)
+    public Conta buscar(String nome) {
+        Optional<Conta> contaOp = contaRepository.buscarPorNomeCliente(nome);
+        
+        if (contaOp.isEmpty()) {
+            throw new ContaNaoEncontradaException(nome);
         }
 
         return contaOp.get();

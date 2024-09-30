@@ -1,18 +1,16 @@
-package com.banco.presentation.cliente.request;
+package com.banco.presentation.auth.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ClienteRequest {
-    
-    private String nome;
+@Getter
+@Setter
+public class LoginResponse {
 
-    private String senha;
+    private String token;
 
 }

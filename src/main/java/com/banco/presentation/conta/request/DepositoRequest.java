@@ -13,8 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DepositoRequest {
 
-    private Long idConta;
-
     private BigDecimal valor;
     
 }

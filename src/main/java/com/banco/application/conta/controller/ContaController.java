@@ -1,5 +1,6 @@
 package com.banco.application.conta.controller;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,11 +51,11 @@ public class ContaController {
     }
 
     @PostMapping("depositar")
-    public ResponseEntity<?> depositar(@RequestBody DepositoRequest depositoRequest) {
+    public ResponseEntity<?> depositar(@RequestBody DepositoRequest depositoRequest, Principal principal) {
         Conta conta = null;
 
         try {
-            conta = contaService.depositar(depositoRequest.getIdConta(), depositoRequest.getValor());
+            conta = contaService.depositar(principal.getName(), depositoRequest.getValor());
         } catch (ContaNaoEncontradaException contaNaoEncontradaException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(contaNaoEncontradaException.getMessage());
         } catch (Exception exception) {
@@ -113,12 +114,12 @@ public class ContaController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("buscar/{id}")
-    public ResponseEntity<?> buscarConta(@PathVariable("id") long idConta) {
+    @GetMapping("buscar")
+    public ResponseEntity<?> buscarConta(Principal principal) {
         Conta conta = null;
 
         try {
-            conta = contaService.buscar(idConta);
+            conta = contaService.buscar(principal.getName());
         } catch (ContaNaoEncontradaException contaNaoEncontradaException) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(contaNaoEncontradaException.getMessage());
         } catch (Exception exception) {
@@ -129,7 +130,7 @@ public class ContaController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @GetMapping("buscar")
+    @GetMapping("buscar-todos")
     public ResponseEntity<Page<?>> buscarTodos(Pageable pageable) {
         Page<Conta> contas = null;
 
